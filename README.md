@@ -44,7 +44,6 @@ E depois:
 
 ```sh
   # Abra pasta do projeto
-  # Abra pasta API
   Importe o arquivo 'schema.sql' no seu servidor de banco de dados.
 ```
 
@@ -55,7 +54,7 @@ E depois:
   $ cd src
   # Instale as dependencias
   $ yarn ou npm install
-  # Coloque sua senha de acesso no arquivo 'conexao.js'
+  # Coloque sua senha de acesso no arquivo '.env'
   # Rode a aplicação
   $ yarn start ou npx nodemon index.js
 ```
