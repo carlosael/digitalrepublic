@@ -54,7 +54,41 @@ const listarUsuarios = async (req, res) => {
     }
 }
 
+const obterUsuario = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [ usuario ] = await knex('usuarios').where('id', id);
+
+        if (usuario === 0) {
+            return res.status(400).json("Usuário não encontrado.");
+        }
+
+        const depositos = await knex('depositos')
+        .where({usuario_id: id}).select('data_da_operacao','valor');
+
+        usuario.depositos = depositos;
+
+        const transferenciasRealizadas = await knex('transferencias')
+        .leftJoin('usuarios', 'usuarios.id','transferencias.usuario_id_destinatario')
+        .where({usuario_id_remetente: id}).select('data_da_operacao','nome','valor')
+
+        usuario.transferencias_realizadas = transferenciasRealizadas;
+
+        const transferenciasRecebidas = await knex('transferencias')
+        .leftJoin('usuarios', 'usuarios.id','transferencias.usuario_id_remetente')
+        .where({usuario_id_destinatario: id}).select('data_da_operacao','nome','valor')
+
+        usuario.transferencias_recebidas = transferenciasRecebidas;
+        
+        return res.status(200).json(usuario);
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
     cadastrarUsuario,
-    listarUsuarios
+    listarUsuarios,
+    obterUsuario
 }
