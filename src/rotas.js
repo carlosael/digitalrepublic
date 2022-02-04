@@ -6,8 +6,10 @@ const depositos = require('./controladores/depositos');
 
 const rotas = express();
 
-// cadastro de usuario
+// usuarios
 rotas.post('/usuarios', usuarios.cadastrarUsuario);
+rotas.get('/usuarios', usuarios.listarUsuarios)
+
 
 // transferencias
 rotas.post('/transferencias', transferencias.cadastrarTransferencia);

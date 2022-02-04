@@ -25,6 +25,36 @@ const cadastrarUsuario = async (req, res) => {
     }
 }
 
+const listarUsuarios = async (req, res) => {
+    try {
+        const usuarios = await knex('usuarios')
+
+        for (const usuario of usuarios) {
+            const depositos = await knex('depositos')
+            .where({usuario_id: usuario.id}).select('data_da_operacao','valor')
+
+            usuario.depositos = depositos;
+
+            const transferenciasRealizadas = await knex('transferencias')
+            .leftJoin('usuarios', 'usuarios.id','transferencias.usuario_id_destinatario')
+            .where({usuario_id_remetente: usuario.id}).select('data_da_operacao','nome','valor')
+
+            usuario.transferencias_realizadas = transferenciasRealizadas;
+
+            const transferenciasRecebidas = await knex('transferencias')
+            .leftJoin('usuarios', 'usuarios.id','transferencias.usuario_id_remetente')
+            .where({usuario_id_destinatario: usuario.id}).select('data_da_operacao','nome','valor')
+
+            usuario.transferencias_recebidas = transferenciasRecebidas;
+        }
+
+        return res.status(200).json(usuarios);
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
-    cadastrarUsuario
+    cadastrarUsuario,
+    listarUsuarios
 }
